@@ -29,7 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <link rel="preload" as="image" href="img/opt/hero.webp" fetchpriority="high">
-<link rel="stylesheet" href="styles.css?v=20261014-2">
+<link rel="stylesheet" href="styles.css?v=20261014-3">
 
 <script type="application/ld+json">
 {
@@ -223,6 +223,27 @@ body #bingc-passive div.bingc-passive-overlay a.bingc-powered-by span.bingc-powe
 body #bingc-passive div.bingc-passive-overlay div.bingc-passive-content div.bingc-passive-get-phone-form form.bingc-passive-get-phone-form div.bingc-passive-get-phone-form-date-selection div.bingc-passive-date-selection-select-day svg.bingc-passive-date-selection-arrows path,
 body #bingc-active div.bingc-active-overlay div.bingc-active-content div.bingc-we-will-call-you.bingc-offline-form div.bingc-active-date-selection-select-day svg.bingc-active-date-selection-arrows path {
   fill: #ffffff !important;
+}
+
+/* Крестик закрытия панели: штатный значок темы тёмно-серый и сливался с нашим тёмным фоном */
+body #bingc-active a.bingc-active-close-button,
+body #bingc-passive div.bingc-passive-overlay a.bingc-passive-close-button {
+  top: 10px !important; right: 12px !important; z-index: 200002 !important;
+  width: 32px !important; height: 32px !important; opacity: 1 !important;
+  display: flex !important; align-items: center; justify-content: center;
+  border-radius: 50%; background: rgba(255,255,255,.14); transition: background .2s;
+}
+body #bingc-active a.bingc-active-close-button:hover,
+body #bingc-passive div.bingc-passive-overlay a.bingc-passive-close-button:hover {
+  background: rgba(255,255,255,.28);
+}
+body #bingc-active a.bingc-active-close-button svg,
+body #bingc-passive div.bingc-passive-overlay a.bingc-passive-close-button svg {
+  width: 14px !important; height: 14px !important;
+}
+body #bingc-active a.bingc-active-close-button svg polygon,
+body #bingc-passive div.bingc-passive-overlay a.bingc-passive-close-button svg polygon {
+  fill: #FFFFFF !important;
 }
 </style>
 </head>
@@ -636,7 +657,7 @@ body #bingc-active div.bingc-active-overlay div.bingc-active-content div.bingc-w
   </div>
 </div>
 
-<script src="script.js?v=20261014-2" defer></script>
+<script src="script.js?v=20261014-3" defer></script>
 <!-- Binotel getcall (виджет обратного звонка) -->
 <script src="https://widgets.binotel.com/getcall/widgets/nx7170w1xcscziazytmb.js" async></script>
 </body>
