@@ -30,7 +30,8 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-  function money(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₸'; }
+  // 0 в колонке цены = цена по запросу
+  function money(n) { if (!(n > 0)) return 'Цена по запросу'; return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₸'; }
   function plural(n, a, b, c) {
     var m10 = n % 10, m100 = n % 100;
     return m10 === 1 && m100 !== 11 ? a : (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? b : c);
@@ -115,7 +116,8 @@
       var b = base[id] || {};
       var catName = col(r, 'категория');
       var cat = catName ? (CAT_SLUG[catName.toLowerCase()] || slug(catName)) : b.cat;
-      var price = parseInt(col(r, 'цена тг').replace(/[^\d]/g, ''), 10);
+      var pcell = col(r, 'цена тг');
+      var price = pcell === '' ? (b.price || 0) : (parseInt(pcell.replace(/[^\d]/g, ''), 10) || 0);
       var photos = col(r, 'фото').split(/[\s;]+/).map(photoUrl).filter(Boolean);
       var it = {
         id: id || slug([col(r, 'фабрика'), model, col(r, 'вариант')].join('-')) || 'row-' + n,
@@ -125,7 +127,7 @@
         brand: col(r, 'фабрика') || b.brand || '',
         model: model || b.model,
         variant: col(r, 'вариант') || (id && base[id] ? b.variant : ''),
-        price: price || b.price || 0,
+        price: price,
         color: col(r, 'цвет') || b.color || '',
         material: col(r, 'материал') || b.material || '',
         parts: col(r, 'состав и габариты') ? lines(col(r, 'состав и габариты')) : (b.parts || []),
@@ -151,7 +153,7 @@
   function buildGroups() {
     var map = {};
     groups = [];
-    items.filter(function (it) { return it.show && it.price > 0; })
+    items.filter(function (it) { return it.show; })
       .sort(function (a, b) { return a.order - b.order; })
       .forEach(function (it) {
         var g = map[it.groupKey];
@@ -159,7 +161,8 @@
         g.list.push(it);
       });
     groups.forEach(function (g) {
-      g.min = Math.min.apply(null, g.list.map(function (x) { return x.price; }));
+      var priced = g.list.map(function (x) { return x.price; }).filter(function (v) { return v > 0; });
+      g.min = priced.length ? Math.min.apply(null, priced) : 0;
       g.stock = g.list.some(function (x) { return x.stock; });
       g.head = g.list[0];
     });
@@ -283,8 +286,9 @@
 
   function render() {
     visible = groups.filter(matches);
-    if (state.sort === 'asc') visible.sort(function (a, b) { return a.min - b.min; });
-    if (state.sort === 'desc') visible.sort(function (a, b) { return b.min - a.min; });
+    var sortMin = function (g) { return g.min || Infinity; };   // без цены - в конец
+    if (state.sort === 'asc') visible.sort(function (a, b) { return sortMin(a) - sortMin(b); });
+    if (state.sort === 'desc') visible.sort(function (a, b) { return (b.min || -1) - (a.min || -1); });
     visible.sort(function (a, b) { return (b.stock ? 1 : 0) - (a.stock ? 1 : 0); });
     grid.innerHTML = visible.map(cardHTML).join('');
     grid.querySelectorAll('.kc').forEach(function (c) {
@@ -502,7 +506,7 @@
   renderSet();
   if (params.get('m')) openModal(params.get('m'), false);
 
-  // Google-таблица: свежие цены, наличие и новые модели. Кэш 5 минут.
+  // Google-таблица: свежие цены, наличие и новые модели - читается при каждом открытии.
   function applySheet(text) {
     if (!mergeSheet(text)) return;
     buildGroups();
@@ -516,8 +520,8 @@
     var CK = 'qz_kat_csv';
     var cached = null;
     try { cached = JSON.parse(sessionStorage.getItem(CK) || 'null'); } catch (e) {}
-    if (cached && Date.now() - cached.t < 300000) applySheet(cached.text);
-    else {
+    if (cached && cached.text) applySheet(cached.text);   // мгновенно прошлый ответ, свежий следом
+    {
       var urls = ['https://docs.google.com/spreadsheets/d/' + K.sheet + '/export?format=csv',
                   'https://docs.google.com/spreadsheets/d/' + K.sheet + '/gviz/tq?tqx=out:csv'];
       (function tryUrl(i) {
@@ -530,7 +534,7 @@
             clearTimeout(timer);
             if (/^\s*</.test(text)) throw 0;       // страница входа: доступ по ссылке не открыт
             try { sessionStorage.setItem(CK, JSON.stringify({ t: Date.now(), text: text })); } catch (e) {}
-            applySheet(text);
+            if (!cached || cached.text !== text) applySheet(text);
           })
           .catch(function () { clearTimeout(timer); tryUrl(i + 1); });
       })(0);
