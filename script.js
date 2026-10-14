@@ -51,7 +51,8 @@
   }
   if (clock) { tickClock(); setInterval(tickClock, 15000); }
 
-  document.getElementById('year').textContent = new Date().getFullYear();
+  var yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ---------- header state ---------- */
   var header = document.getElementById('header');
@@ -248,6 +249,7 @@
   }
 
   var gallery = document.getElementById('gallery');
+  if (gallery) {   // галерея есть только на главной
   var galImg = document.getElementById('galImg');
   var galCounter = document.getElementById('galCounter');
   var galWa = document.getElementById('galWa');
@@ -323,11 +325,13 @@
     touchX = null;
   }, { passive: true });
 
+  }
+
   /* ============================================================
      ORDER FORM → WhatsApp
      ============================================================ */
   var form = document.getElementById('orderForm');
-  form.addEventListener('submit', function (e) {
+  if (form) form.addEventListener('submit', function (e) {
     e.preventDefault();
     var name = form.name.value.trim();
     var phone = form.phone.value.trim();
