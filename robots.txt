@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ali-hub-01.github.io/qaz-zhihaz/sitemap.xml
