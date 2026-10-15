@@ -296,7 +296,7 @@
     renderGallery();
   }
 
-  document.querySelectorAll('.cat-card').forEach(function (card) {
+  document.querySelectorAll('.cat-card[data-cat]').forEach(function (card) {
     card.addEventListener('click', function () { openGallery(card.dataset.cat); });
   });
   tabs.forEach(function (t) {
