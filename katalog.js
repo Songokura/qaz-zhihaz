@@ -58,10 +58,14 @@
     return 0;
   }
   function meters(mm) { return (mm / 1000).toFixed(1).replace('.0', '').replace('.', ',') + ' м'; }
+  // Есть кровать - матрас в комплект не входит, говорим об этом в карточке и в модалке
+  function hasBed(it) {
+    return it.cat === 'spalni' || it.parts.some(function (p) { return /^Кровать/.test(p); });
+  }
   function specLine(it) {
     if (it.cat === 'spalni') {
       var w = partW(it, /^(Шкаф|Шифоньер)/);
-      return [w ? 'Шкаф ' + meters(w) : '', it.mattress ? 'матрас ' + it.mattress.replace(' мм', '') : ''].filter(Boolean).join(' · ');
+      return [w ? 'Шкаф ' + meters(w) : '', it.mattress ? 'спальное место ' + it.mattress.replace(' мм', '') : ''].filter(Boolean).join(' · ');
     }
     if (it.cat === 'kuhni') {
       var k = partW(it, /^(Общий габарит|Габариты)/) || partW(it);
@@ -267,6 +271,7 @@
         '<p class="kc__kind">' + esc(it.kind) + (it.brand ? ' · ' + esc(it.brand) : '') + '</p>' +
         '<h3 class="kc__name"><a href="?m=' + esc(it.id) + '" data-open="' + esc(it.id) + '">' + esc(it.model) + '</a></h3>' +
         '<p class="kc__spec">' + esc(specLine(it)) + '</p>' +
+        (hasBed(it) ? '<p class="kc__note">Матрас не входит в комплект</p>' : '') +
         variants +
         '<div class="kc__foot">' +
           '<b class="kc__price">' + money(it.price) + '</b>' +
@@ -377,6 +382,8 @@
     $('#kmPrice').textContent = money(it.price);
     $('#kmStock').textContent = it.stock ? 'В наличии - привезём и соберём сегодня' : 'Уточните наличие у менеджера';
     $('#kmStock').classList.toggle('is-out', !it.stock);
+    var note = $('#kmNote');
+    if (note) note.hidden = !hasBed(it);
     $('#kmWa').href = waItem(it);
     var add = $('#kmAdd');
     add.setAttribute('aria-pressed', String(inSet));
@@ -387,7 +394,7 @@
     }).join('');
     $('#kmPartsWrap').hidden = !it.parts.length;
     $('#kmSpecs').innerHTML = row('Материал', it.material) + row('Цвет', it.color) + row('Изголовье', it.headboard) +
-      row('Подъёмный механизм', it.lift) + row('Матрас', it.mattress) + row('Комплектация', it.features.join(', '));
+      row('Подъёмный механизм', it.lift) + row('Спальное место', it.mattress) + row('Матрас', hasBed(it) ? 'не входит в комплект' : '') + row('Комплектация', it.features.join(', '));
     var pos = visible.indexOf(g);
     $('#kmPrev').disabled = pos <= 0;
     $('#kmNext').disabled = pos < 0 || pos >= visible.length - 1;

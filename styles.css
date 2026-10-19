@@ -631,6 +631,7 @@ body.gallery-open{overflow:hidden}
 .khero__perks{list-style:none;display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:22px;font-size:14px;font-weight:600;animation:kUp .9s .14s var(--ease) both}
 .khero__perks li{display:flex;align-items:center;gap:8px}
 .khero__perks li::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(214,158,28,.18)}
+.khero__note{margin-top:14px;font-size:14px;color:var(--txt-dim);animation:kUp .9s .14s var(--ease) both}
 @keyframes kUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
 
 .ktiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:38px}
@@ -728,6 +729,7 @@ body.gallery-open{overflow:hidden}
 .kc__name a:focus-visible{outline:none}
 .kc:has(.kc__name a:focus-visible){outline:2px solid var(--gold);outline-offset:3px}
 .kc__spec{font-size:14px;color:var(--txt-dark-dim)}
+.kc__note{margin-top:2px;font-size:13px;font-weight:600;color:#8A5A0E}
 .kc__vars,.km__vars{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .kvar{
   position:relative;z-index:2;padding:6px 12px;border-radius:100px;border:1.5px solid rgba(28,25,19,.14);
@@ -837,6 +839,8 @@ body.km-open{overflow:hidden}
 .km__stock.is-out{color:#B07514}
 .km__perks{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
 .km__perks li{padding:6px 12px;border-radius:100px;background:var(--paper-2);font-size:13px;font-weight:700}
+.km__note{padding:10px 14px;border-radius:12px;background:rgba(214,158,28,.12);border:1px solid rgba(214,158,28,.35);font-size:14px;font-weight:700;color:#7A4E08}
+.km__note[hidden]{display:none}
 .km__acts{display:grid;gap:10px}
 .km__acts .btn{white-space:nowrap}
 .km__call{font-size:14px;font-weight:600;color:var(--txt-dark-dim)}
@@ -862,7 +866,7 @@ body.km-open{overflow:hidden}
 }
 @media (prefers-reduced-motion:reduce){
   .kc{opacity:1;transform:none}
-  .khero__title,.khero__lead,.khero__perks,.ktile,.kset{animation:none}
+  .khero__title,.khero__lead,.khero__perks,.khero__note,.ktile,.kset{animation:none}
 }
 .catalog__more{display:flex;flex-direction:column;align-items:center;gap:0;margin-top:40px;text-align:center}
 .catalog__more .catalog__note{margin-top:16px}
